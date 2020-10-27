@@ -83,7 +83,7 @@ void Downloader::download()
 	{
 		throw string("Error: curl_easy_perform() failed: " + string(curl_easy_strerror(m_res)));
 	}
-	size_t posBegVid = strHTML.find("sources: [\"https://m30.uqload.com/");
+	size_t posBegVid = strHTML.find("sources: [\"https://");
 	size_t posEndVid = strHTML.find("/v.mp4\"]");
 	if (posBegVid == std::string::npos || posEndVid == std::string::npos)
 	{
