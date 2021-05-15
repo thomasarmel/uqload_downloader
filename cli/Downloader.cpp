@@ -1,5 +1,19 @@
 #include "Downloader.h"
 
+#if !defined(WIN32) && !defined(_WIN32) && !defined(__WIN32__) && !defined(__NT__)
+error_t fopen_s(FILE** f, const char* name, const char* mode)
+{ // https://stackoverflow.com/questions/1513209/is-there-a-way-to-use-fopen-s-with-gcc-or-at-least-create-a-define-about-it
+	error_t ret = 0;
+	assert(f);
+	*f = fopen(name, mode);
+	if (!*f)
+	{
+		ret = errno;
+	}
+	return ret;
+}
+#endif
+
 using namespace std;
 
 Downloader::Downloader()
@@ -35,7 +49,7 @@ void Downloader::setDownloadCallback(void* callback)
 {
 	if (callback != nullptr)
 	{
-		curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, FALSE);
+		curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, false);
 		m_downloadCallback = callback;
 	}
 }
@@ -69,7 +83,7 @@ void Downloader::download()
 	{
 		throw string("Error: curl init");
 	}
-	if (_access(m_outputFile.c_str(), 0) == 0)
+	if (uqdCheckAccess(m_outputFile.c_str(), 0) == 0)
 	{
 		throw string("Error: " + m_outputFile + " already exists");
 	}
