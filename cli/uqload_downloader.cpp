@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	}
 	string pageInit = string(argv[1]), outputFile=string(argv[2]);
 	Downloader *uqDownloader=new Downloader(pageInit, outputFile);
-	uqDownloader->setDownloadCallback(downloadCallback);
+	uqDownloader->setDownloadCallback((void*)downloadCallback);
 	try
 	{
 		uqDownloader->download();
