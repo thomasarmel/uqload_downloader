@@ -8,8 +8,11 @@ MY_PATH="`dirname \"$0\"`"              # relative
 MY_PATH="`( cd \"$MY_PATH\" && pwd )`"  # absolutized and normalized
 SCRIPT="${0##*/}"
 
-[[ ! -f $HOME/.local/bin/uqload_downloader ]] && echo "g++ -o uqload_downloader uqload_downloader.cpp Downloader.cpp -lcurl && mv uqload_downloader $HOME/.local/bin/" 
 
+[[ ! -f $HOME/.local/bin/uqload_downloader ]]; then
+	echo "INSTALL PLEASE RUN"
+	echo "sudo apt-get install libcurl4-openssl-dev -y && g++ -o uqload_downloader uqload_downloader.cpp Downloader.cpp -lcurl && mv uqload_downloader $HOME/.local/bin/" 
+fi
 [[ $1 == "old" ]] && OLD='old.' || OLD=''
 
 cycle=1
