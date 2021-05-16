@@ -10,7 +10,7 @@ SCRIPT="${0##*/}"
 
 
 [[ ! -f $HOME/.local/bin/uqload_downloader ]]; then
-	echo "INSTALL PLEASE RUN"
+	echo "TO INSTALL PLEASE RUN"
 	echo "sudo apt-get install libcurl4-openssl-dev -y && g++ -o uqload_downloader uqload_downloader.cpp Downloader.cpp -lcurl && mv uqload_downloader $HOME/.local/bin/" 
 fi
 [[ $1 == "old" ]] && OLD='old.' || OLD=''
@@ -20,5 +20,5 @@ for uqlink in $(cat ~/.kodi/temp/kodi.${OLD}log | grep uqload | grep 'play :' | 
 do
 	uqname=$(cat ~/.kodi/temp/kodi.${OLD}log | grep uqload | grep $uqlink | grep VideoPlayer | cut -d '=' -f 4 | cut -d '&' -f 1 | cut -d '%' -f 1 | sed 's/\+/_/g')
 	cycle=$((cycle+1))
-	echo "uqload_downloader https://uqload.com/$uqlink \"$uqname.mp4\""
+	echo "uqload_downloader https://uqload.com/$uqlink \"$HOME/astroport/$uqname.mp4\""
 done
