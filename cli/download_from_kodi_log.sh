@@ -27,7 +27,7 @@ fi
 ## CHOOSE kodi.${OLD}log
 [[ $1 == "old" ]] && OLD='old.' || OLD=''
 
-[[ ! $(which kodi) ]] && echo "KODI IS MISSING" && exit 1
+[[ ! $(which kodi) ]] && echo "KODI IS MISSING. VISIT https://copylaradio.com" && exit 1
 
 ## LOOP
 cycle=1
@@ -48,11 +48,9 @@ do
 		if [[ "$YESNO" != "" ]]; then
 			## COPY STREAMING
 			uqload_downloader https://uqload.com/$uqlink "$HOME/astroport/$uqname.mp4"
-			## TMDB ID ?
-			echo ">>> ID TMDB? https://www.themoviedb.org/search?query=$uqname"
-			read TMDBID
-			[[ "$TMDBID" != "" ]] && mkdir -p "$HOME/astroport/film/$TMDBID/" && mv $HOME/astroport/$uqname.mp4 $HOME/astroport/film/$TMDBID/ && echo "COPY ~/astroport/$uqname.mp4 DONE" || continue
-			echo "COPY ~/astroport/film/$TMDBID/$uqname.mp4 DONE"
+			echo "COPY ~/astroport/$uqname.mp4 DONE"
+			## ARE WE ASTROPORT STATION? https://astroport.com 
+			[[ "$USER" != "xbian" && ${IPFSNODEID} ]] && ~/.zen/astrXbian/ajouter_video.sh
 		else
 			continue
 		fi
@@ -60,9 +58,7 @@ do
 done
 echo 
 echo "########################################################################"
-[[ $cycle == 1 && ! ${OLD} ]] && echo "NOTHING IN CURRENT LOG, TRY old ?"
-read OLD
-[[ "$OLD" != "" ]] && $MY_PATH/$SCRIPT old
-echo "DONE."
-echo "VISIT https://copylaradio.com"
+[[ $cycle == 1 && ! ${OLD} ]] && echo "NOTHING IN CURRENT LOG, TRY old ?" && read OLD && [[ "$OLD" != "" ]] && $MY_PATH/$SCRIPT old
+echo "DONE... VideoClub Datacenter Virtuel entre amis. https://copylaradio.com"
+echo "ASTROPORT. Le web des gens."
 exit 0
