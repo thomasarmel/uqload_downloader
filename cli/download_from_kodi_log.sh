@@ -27,6 +27,8 @@ fi
 ## CHOOSE kodi.${OLD}log
 [[ $1 == "old" ]] && OLD='old.' || OLD=''
 
+[[ ! $(which kodi) ]] && echo "KODI IS MISSING" && exit 1
+
 ## LOOP
 cycle=1
 for uqlink in $(cat ~/.kodi/temp/kodi.${OLD}log | grep uqload | grep 'play :' | rev | cut -d '/' -f 1 | rev);
@@ -34,13 +36,13 @@ do
 	uqname=$(cat ~/.kodi/temp/kodi.${OLD}log | grep uqload | grep $uqlink | grep VideoPlayer | cut -d '=' -f 4 | cut -d '&' -f 1 | cut -d '%' -f 1 | sed 's/\+/_/g')
 	cycle=$((cycle+1))
 	echo "########################################################################"
-	echo "uqload_downloader https://uqload.com/$uqlink \"$HOME/astroport/$uqname.mp4\""
+	echo "MANUAL : uqload_downloader https://uqload.com/$uqlink \"$HOME/astroport/$uqname.mp4\""
 	## CHECK & MANAGE COPY
-	if [[ $(find /home/fred/astroport -name "$uqname.mp4" -type f -print) ]];
+	if [[ $(find $HOME/astroport -name "$uqname.mp4" -type f -print) ]];
 	then
 		echo "COPY ALREADY IN $HOME/astroport/"
 	else
-		echo "WATCHED MOVIE : $uqname (https://uqload.com/$uqlink)"
+		echo "DETECTED MOVIE : $uqname (https://uqload.com/$uqlink)"
 		echo "WANT TO COPY ? Yes? Write any character + enter, else just hit enter."
 		read YESNO
 		if [[ "$YESNO" != "" ]]; then
@@ -61,5 +63,6 @@ echo "########################################################################"
 [[ $cycle == 1 && ! ${OLD} ]] && echo "NOTHING IN CURRENT LOG, TRY old ?"
 read OLD
 [[ "$OLD" != "" ]] && $MY_PATH/$SCRIPT old
-echo "DONE"
+echo "DONE."
+echo "VISIT https://copylaradio.com"
 exit 0
