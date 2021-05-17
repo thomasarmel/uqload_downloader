@@ -11,5 +11,5 @@ Simply lauch __uqload_downloader.exe https://uqload.com/embed-[...].html yourmov
 
 ---
 
-Linux users can run [./cli/download_from_kodi_log.sh](./blob/main/cli/download_from_kodi_log.sh) (Linux Mint tested)
+Linux users can run [./cli/download_from_kodi_log.sh](./cli/download_from_kodi_log.sh) (Linux Mint tested)
 to install uqload_downloader and detects uqload from KODI/VStream logs and ask for copying it to $HOME/astroport
