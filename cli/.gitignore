@@ -7,4 +7,4 @@ autom4te.cache
 config.log
 Makefile
 Makefile.in
-
+.deps
