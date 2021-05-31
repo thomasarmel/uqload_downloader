@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 3)
 	{
-		cerr << "Usage: " << argv[0] << "https://uqload.com/embed-xxxxxxx.html movie.mp4" << endl;
+		cerr << "Usage: " << argv[0] << " https://uqload.com/embed-xxxxxxx.html movie.mp4" << endl;
 		return -1;
 	}
 	string pageInit = string(argv[1]), outputFile=string(argv[2]);

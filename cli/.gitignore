@@ -1,2 +1,10 @@
 uqload_downloader
 *.exe
+*.o
+aclocal.m4
+config.status
+autom4te.cache
+config.log
+Makefile
+Makefile.in
+
