@@ -1,0 +1,12 @@
+#ifndef UQLOAD_DOWNLOADER_DOWNLOADERLISTENER_H
+#define UQLOAD_DOWNLOADER_DOWNLOADERLISTENER_H
+
+
+class DownloaderListener
+{
+public:
+    virtual int downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) = 0;
+};
+
+
+#endif //UQLOAD_DOWNLOADER_DOWNLOADERLISTENER_H

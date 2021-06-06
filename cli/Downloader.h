@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DOWNLOADER_H
+#define DOWNLOADER_H
 
 #include <iostream>
 #include <string>
@@ -12,23 +13,29 @@
 error_t fopen_s(FILE** f, const char* name, const char* mode);
 #endif
 #include <curl/curl.h>
+#include "DownloaderListener.h"
 
 class Downloader
 {
 public:
 	Downloader();
-	Downloader(std::string uqUrl, std::string outputFile);
+	Downloader(std::string uqUrl, std::string outputFile, DownloaderListener *downloaderListener=nullptr);
 	~Downloader();
 	void setUqUrl(std::string uqUrl);
 	void setOutputFile(std::string outputFile);
-	void setDownloadCallback(void* callback);
+    void setListener(DownloaderListener *downloaderListener);
+	//void setDownloadCallback(void* callback);
 	void download();
 
 private:
 	static size_t writefunc(void *curl, size_t size, std::size_t nmemb, std::string *s);
+    static int downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 	std::string m_uqUrl, m_outputFile;
 	CURL* m_curl;
 	CURLcode m_res;
 	FILE* m_fp;
-	void* m_downloadCallback;
+	//void* m_downloadCallback;
+    DownloaderListener *m_downloaderListener = nullptr;
 };
+
+#endif // DOWNLOADER_H

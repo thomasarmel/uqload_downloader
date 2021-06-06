@@ -19,7 +19,7 @@ using namespace std;
 Downloader::Downloader()
 {
 	m_fp = nullptr;
-	m_downloadCallback = nullptr;
+	//m_downloadCallback = nullptr;
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	m_curl = curl_easy_init();
 	curl_easy_setopt(m_curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -27,12 +27,14 @@ Downloader::Downloader()
 	curl_easy_setopt(m_curl, CURLOPT_COOKIEFILE, "");
 	curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, "");
 	curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
+    curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, false);
 }
 
-Downloader::Downloader(std::string uqUrl, std::string outputFile) : Downloader()
+Downloader::Downloader(std::string uqUrl, std::string outputFile, DownloaderListener *downloaderListener) : Downloader()
 {
 	setUqUrl(uqUrl);
 	setOutputFile(outputFile);
+	m_downloaderListener=downloaderListener;
 }
 
 void Downloader::setUqUrl(std::string uqUrl)
@@ -45,13 +47,18 @@ void Downloader::setOutputFile(std::string outputFile)
 	m_outputFile = outputFile;
 }
 
-void Downloader::setDownloadCallback(void* callback)
+/*void Downloader::setDownloadCallback(void* callback)
 {
 	if (callback != nullptr)
 	{
 		curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, false);
 		m_downloadCallback = callback;
 	}
+}*/
+
+void Downloader::setListener(DownloaderListener *downloaderListener)
+{
+    m_downloaderListener=downloaderListener;
 }
 
 Downloader::~Downloader()
@@ -105,10 +112,13 @@ void Downloader::download()
 	}
 	string videoURL = strHTML.substr(posBegVid + 11, posEndVid - posBegVid - 5);
 
-	if (m_downloadCallback != nullptr)
+	/*if (m_downloadCallback != nullptr)
 	{
 		curl_easy_setopt(m_curl, CURLOPT_XFERINFOFUNCTION, m_downloadCallback);
-	}
+	}*/
+	void *m_downloadCallback = Downloader::downloadCallback;
+    curl_easy_setopt(m_curl, CURLOPT_XFERINFOFUNCTION, m_downloadCallback);
+    curl_easy_setopt(m_curl, CURLOPT_XFERINFODATA, this);
 
 	curl_easy_setopt(m_curl, CURLOPT_URL, videoURL.c_str());
 	curl_easy_setopt(m_curl, CURLOPT_REFERER, m_uqUrl.c_str());
@@ -119,4 +129,18 @@ void Downloader::download()
 	{
 		throw string("Error: curl_easy_perform() failed: " + string(curl_easy_strerror(m_res)));
 	}
+}
+
+int Downloader::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+{
+    if(!p)
+    {
+        return 0;
+    }
+    DownloaderListener *downloaderListener = ((Downloader*)p)->m_downloaderListener;
+    if(downloaderListener != nullptr)
+    {
+        return downloaderListener->downloadCallback(p, dltotal, dlnow, ultotal, ulnow);
+    }
+    return 0;
 }
