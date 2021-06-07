@@ -27,10 +27,17 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxD
     startDownloadButton->SetFont(font);
     downloadProgressLabel = new wxStaticText(mainPanel, wxID_ANY, wxT("Download Progress:"), wxPoint(20, 370));
     downloadProgressGauge = new wxGauge(mainPanel, ID_DOWNLOADPROGRESSGAUGE, 100, wxPoint(20, 400), wxSize(400, 35));
+    uqDownloader=new Downloader();
 }
 
 MainFrame::~MainFrame()
-{}
+{
+    if(asyncDownloadThread != nullptr)
+    {
+        delete asyncDownloadThread;
+    }
+    delete uqDownloader; // slow
+}
 
 void MainFrame::onStartDownloadClicked(wxCommandEvent& event)
 {
@@ -64,14 +71,20 @@ void MainFrame::onStartDownloadClicked(wxCommandEvent& event)
         wxMessageBox(wxT("Can't replace specified file content."), wxT("File permissions error"), wxICON_WARNING);
         return;
     }
-    uqDownloader=new Downloader(URL.ToStdString(), fileName.ToStdString(), this);
+    //uqDownloader=new Downloader(URL.ToStdString(), fileName.ToStdString(), this);
+    uqDownloader->setUqUrl(URL.ToStdString());
+    uqDownloader->setOutputFile(fileName.ToStdString());
+    uqDownloader->setListener(this);
     try
     {
+        if(asyncDownloadThread != nullptr)
+        {
+            delete asyncDownloadThread;
+            asyncDownloadThread= nullptr;
+        }
         downloadProgressGauge->SetValue(0);
-        std::thread *asyncDownloadThread=new std::thread(&Downloader::download, uqDownloader);
-        //uqDownloader->download();
+        asyncDownloadThread=new std::thread(&MainFrame::startDownload, this);
         asyncDownloadThread->detach();
-        wxMessageBox(wxT("Your movie has been downloaded."), wxT("Download done"), wxICON_INFORMATION);
 
     }
     catch (const std::string& e)
@@ -89,6 +102,19 @@ int MainFrame::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, c
     }
     downloadProgressGauge->SetValue((int)(dlnow * 100/dltotal));
     return 0;
+}
+
+void MainFrame::startDownload()
+{
+    if(uqDownloader == nullptr)
+    {
+        wxMessageBox(wxT("Pointer on downloader is null."), wxT("Pointer error"), wxICON_ERROR);
+        return;
+    }
+    startDownloadButton->Disable();
+    uqDownloader->download();
+    startDownloadButton->Enable();
+    wxMessageBox(wxT("Your movie has been downloaded."), wxT("Download done"), wxICON_INFORMATION);
 }
 
 /*static int staticDownloadCallback(MainFrame *mainFrameInstance, void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)

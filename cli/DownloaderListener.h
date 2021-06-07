@@ -1,6 +1,8 @@
 #ifndef UQLOAD_DOWNLOADER_DOWNLOADERLISTENER_H
 #define UQLOAD_DOWNLOADER_DOWNLOADERLISTENER_H
 
+#include <curl/curl.h>
+#include "Downloader.h"
 
 class DownloaderListener
 {

@@ -129,6 +129,9 @@ void Downloader::download()
 	{
 		throw string("Error: curl_easy_perform() failed: " + string(curl_easy_strerror(m_res)));
 	}
+    fclose(m_fp);
+    m_fp=nullptr;
+	// TODO: Close output file
 }
 
 int Downloader::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)

@@ -2,6 +2,7 @@
 #define UQLOAD_DOWNLOADER_MAINFRAME_H
 
 #include <thread>
+#include <atomic>
 #include "MyApp.h"
 #include "../cli/Downloader.h"
 
@@ -15,7 +16,7 @@ public:
 
 private:
     void onStartDownloadClicked(wxCommandEvent& event);
-    //friend static int staticDownloadCallback(MainFrame *mainFrameInstance, void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
+    void startDownload();
 
     wxPanel *mainPanel;
     wxStaticText *titleLabel;
@@ -30,6 +31,9 @@ private:
     wxString URLTextCtrlHint;
 
     Downloader *uqDownloader = nullptr;
+    std::thread *asyncDownloadThread = nullptr; // replace with unique_ptr ?
+
+    std::atomic<bool> shouldStopDownload = ATOMIC_VAR_INIT(false);
 
     DECLARE_EVENT_TABLE()
 
