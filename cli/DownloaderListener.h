@@ -6,7 +6,8 @@
 
 class DownloaderListener
 {
-public:
+protected:
+    friend class Downloader;
     virtual int
     downloadCallback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) = 0;
 };

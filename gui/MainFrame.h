@@ -13,9 +13,9 @@ public:
 
     ~MainFrame();
 
+private:
     int downloadCallback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
-private:
     void onStartDownloadClicked(wxCommandEvent &event);
 
     void onStopDownloadClicked(wxCommandEvent &event);

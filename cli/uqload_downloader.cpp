@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     Downloader *uqDownloader = new Downloader(pageInit, outputFile);
     class : public DownloaderListener
     {
-    public:
+    private:
         virtual int
         downloadCallback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
         {
