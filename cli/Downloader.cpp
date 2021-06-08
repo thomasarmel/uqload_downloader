@@ -125,13 +125,12 @@ void Downloader::download()
 	curl_easy_setopt(m_curl, CURLOPT_WRITEFUNCTION, NULL);
 	curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, m_fp);
 	m_res = curl_easy_perform(m_curl);
+    fclose(m_fp);
+    m_fp=nullptr;
 	if (m_res != CURLE_OK)
 	{
 		throw string("Error: curl_easy_perform() failed: " + string(curl_easy_strerror(m_res)));
 	}
-    fclose(m_fp);
-    m_fp=nullptr;
-	// TODO: Close output file
 }
 
 int Downloader::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)

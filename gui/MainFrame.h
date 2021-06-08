@@ -16,19 +16,22 @@ public:
 
 private:
     void onStartDownloadClicked(wxCommandEvent& event);
+    void onStopDownloadClicked(wxCommandEvent& event);
+    void onClose(wxCloseEvent &event);
     void startDownload();
 
-    wxPanel *mainPanel;
-    wxStaticText *titleLabel;
+    wxPanel *m_mainPanel;
+    wxStaticText *m_titleLabel;
     wxStaticText *URLLabel;
     wxTextCtrl *URLTextCtrl;
     wxStaticText *fileDestLabel;
     wxFilePickerCtrl *fileDestPicker;
     wxButton *startDownloadButton;
+    wxButton *stopDownloadButton;
     wxStaticText *downloadProgressLabel;
     wxGauge *downloadProgressGauge;
 
-    wxString URLTextCtrlHint;
+    wxString URLTextCtrlHint, fileName;
 
     Downloader *uqDownloader = nullptr;
     std::thread *asyncDownloadThread = nullptr; // replace with unique_ptr ?
@@ -42,6 +45,7 @@ private:
         ID_URLTEXTCTRL = wxID_HIGHEST + 1,
         ID_DESTFILEPICKER,
         ID_STARTDOWNLOADBUTTON,
+        ID_STOPDOWNLOADBUTTON,
         ID_DOWNLOADPROGRESSGAUGE,
     };
 };
