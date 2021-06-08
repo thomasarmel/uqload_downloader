@@ -2,9 +2,11 @@
 #define UQLOAD_DOWNLOADER_MYAPP_H
 
 #include <wx/wxprec.h>
+
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif // WX_PRECOMP
+
 #include <wx/filepicker.h>
 #include <wx/uri.h>
 #include "MainFrame.h"

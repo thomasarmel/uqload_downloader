@@ -6,7 +6,9 @@ BEGIN_EVENT_TABLE(MainFrame, wxFrame)
                 EVT_CLOSE(MainFrame::onClose)
 END_EVENT_TABLE()
 
-MainFrame::MainFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500, 500), (!wxRESIZE_BORDER) | wxCAPTION | wxSYSTEM_MENU | wxCLOSE_BOX | wxMINIMIZE_BOX)
+MainFrame::MainFrame(const wxString &title) : wxFrame(NULL, wxID_ANY, title, wxDefaultPosition, wxSize(500, 500),
+                                                      (!wxRESIZE_BORDER) | wxCAPTION | wxSYSTEM_MENU | wxCLOSE_BOX |
+                                                      wxMINIMIZE_BOX)
 {
     SetIcon(wxICON(ApplicationIcon));
     wxFont font = GetFont();
@@ -18,23 +20,32 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(NULL, wxID_ANY, title, wxD
     font.MakeBold();
     font.SetSymbolicSize(wxFONTSIZE_XX_LARGE);
     m_titleLabel->SetFont(font);
-    URLLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("URL:"), wxPoint(20, 100));
-    URLTextCtrl = new wxTextCtrl(m_mainPanel, ID_URLTEXTCTRL, wxEmptyString, wxPoint(20, 130), wxSize(400, -1), wxTE_AUTO_URL);
-    URLTextCtrlHint = wxT("https://uqload.com/embed-xxxxxxx.html");
-    URLTextCtrl->SetHint(URLTextCtrlHint);
-    fileDestLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("Destination file:"), wxPoint(20, 200));
-    fileDestPicker = new wxFilePickerCtrl(m_mainPanel, ID_DESTFILEPICKER, wxEmptyString, wxT("Please indicate a non-existing file for saving your movie"), _T("MP4 file (*.mp4)|*.mp4|All files (*.*)|*.*"), wxPoint(20, 230), wxSize(400, -1), wxFLP_SAVE | wxFLP_OVERWRITE_PROMPT /*| wxFLP_CHANGE_DIR*/ | wxFLP_USE_TEXTCTRL);
-    startDownloadButton = new wxButton(m_mainPanel, ID_STARTDOWNLOADBUTTON, wxT("START"), wxPoint(20, 300), wxDefaultSize);
-    stopDownloadButton = new wxButton(m_mainPanel, ID_STOPDOWNLOADBUTTON, wxT("STOP"), wxPoint(150, 300), wxDefaultSize);
-    font = startDownloadButton->GetFont();
+    m_URLLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("URL:"), wxPoint(20, 100));
+    m_URLTextCtrl = new wxTextCtrl(m_mainPanel, ID_URLTEXTCTRL, wxEmptyString, wxPoint(20, 130), wxSize(400, -1),
+                                   wxTE_AUTO_URL);
+    m_URLTextCtrlHint = wxT("https://uqload.com/embed-xxxxxxx.html");
+    m_URLTextCtrl->SetHint(m_URLTextCtrlHint);
+    m_fileDestLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("Destination file:"), wxPoint(20, 200));
+    m_fileDestPicker = new wxFilePickerCtrl(m_mainPanel, ID_DESTFILEPICKER, wxEmptyString,
+                                            wxT("Please indicate a non-existing file for saving your movie"),
+                                            _T("MP4 file (*.mp4)|*.mp4|All files (*.*)|*.*"), wxPoint(20, 230),
+                                            wxSize(400, -1),
+                                            wxFLP_SAVE | wxFLP_OVERWRITE_PROMPT /*| wxFLP_CHANGE_DIR*/ |
+                                            wxFLP_USE_TEXTCTRL);
+    m_startDownloadButton = new wxButton(m_mainPanel, ID_STARTDOWNLOADBUTTON, wxT("START"), wxPoint(20, 300),
+                                         wxDefaultSize);
+    m_stopDownloadButton = new wxButton(m_mainPanel, ID_STOPDOWNLOADBUTTON, wxT("STOP"), wxPoint(150, 300),
+                                        wxDefaultSize);
+    font = m_startDownloadButton->GetFont();
     font.MakeBold();
-    startDownloadButton->SetFont(font);
-    stopDownloadButton->SetFont(font);
-    stopDownloadButton->Disable();
-    downloadProgressLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("Download Progress:"), wxPoint(20, 370));
-    downloadProgressGauge = new wxGauge(m_mainPanel, ID_DOWNLOADPROGRESSGAUGE, 100, wxPoint(20, 400), wxSize(400, 35));
-    downloadProgressGauge->SetForegroundColour(*wxGREEN);
-    uqDownloader=new Downloader();
+    m_startDownloadButton->SetFont(font);
+    m_stopDownloadButton->SetFont(font);
+    m_stopDownloadButton->Disable();
+    m_downloadProgressLabel = new wxStaticText(m_mainPanel, wxID_ANY, wxT("Download Progress:"), wxPoint(20, 370));
+    m_downloadProgressGauge = new wxGauge(m_mainPanel, ID_DOWNLOADPROGRESSGAUGE, 100, wxPoint(20, 400),
+                                          wxSize(400, 35));
+    m_downloadProgressGauge->SetForegroundColour(*wxGREEN);
+    m_uqDownloader = new Downloader();
 }
 
 MainFrame::~MainFrame()
@@ -43,77 +54,77 @@ MainFrame::~MainFrame()
 
 void MainFrame::onClose(wxCloseEvent &event)
 {
-    if(asyncDownloadThread != nullptr)
+    if (m_asyncDownloadThread != nullptr)
     {
-        delete asyncDownloadThread;
+        delete m_asyncDownloadThread;
     }
-    delete uqDownloader; // slow
+    delete m_uqDownloader; // slow
     Destroy();
 }
 
-void MainFrame::onStartDownloadClicked(wxCommandEvent& event)
+void MainFrame::onStartDownloadClicked(wxCommandEvent &event)
 {
-    fileName = fileDestPicker->GetPath();
-    wxString URL = URLTextCtrl->GetValue();
-    if(fileName.IsEmpty())
+    m_fileName = m_fileDestPicker->GetPath();
+    wxString URL = m_URLTextCtrl->GetValue();
+    if (m_fileName.IsEmpty())
     {
         wxMessageBox(wxT("Please specify a file where movie will be saved."), wxT("File name error"), wxICON_WARNING);
         return;
     }
-    if(URL.IsEmpty() || URL.IsSameAs(URLTextCtrlHint))
+    if (URL.IsEmpty() || URL.IsSameAs(m_URLTextCtrlHint))
     {
         wxMessageBox(wxT("Please specify a valid UQLoad URL."), wxT("URL error"), wxICON_WARNING);
         return;
     }
     wxURI checkURL(URL);
-    if(!checkURL.HasScheme() || !checkURL.HasServer() || !checkURL.HasPath())
+    if (!checkURL.HasScheme() || !checkURL.HasServer() || !checkURL.HasPath())
     {
         wxMessageBox(wxT("Please specify a valid UQLoad URL."), wxT("URL error"), wxICON_WARNING);
         return;
     }
 
-    wxFileName checkFileName(fileName);
-    if(!checkFileName.IsOk() || checkFileName.IsDir())
+    wxFileName checkFileName(m_fileName);
+    if (!checkFileName.IsOk() || checkFileName.IsDir())
     {
         wxMessageBox(wxT("Please specify a valid file name."), wxT("File name error"), wxICON_WARNING);
         return;
     }
-    if(checkFileName.FileExists() && !wxRemoveFile(fileName))
+    if (checkFileName.FileExists() && !wxRemoveFile(m_fileName))
     {
         wxMessageBox(wxT("Can't replace specified file content."), wxT("File permissions error"), wxICON_WARNING);
         return;
     }
-    //uqDownloader=new Downloader(URL.ToStdString(), fileName.ToStdString(), this);
-    uqDownloader->setUqUrl(URL.ToStdString());
-    uqDownloader->setOutputFile(fileName.ToStdString());
-    uqDownloader->setListener(this);
-    shouldStopDownload.store(false);
+    //m_uqDownloader=new Downloader(URL.ToStdString(), m_fileName.ToStdString(), this);
+    m_uqDownloader->setUqUrl(URL.ToStdString());
+    m_uqDownloader->setOutputFile(m_fileName.ToStdString());
+    m_uqDownloader->setListener(this);
+    m_shouldStopDownload.store(false);
     try
     {
-        if(asyncDownloadThread != nullptr)
+        if (m_asyncDownloadThread != nullptr)
         {
-            delete asyncDownloadThread;
-            asyncDownloadThread= nullptr;
+            delete m_asyncDownloadThread;
+            m_asyncDownloadThread = nullptr;
         }
-        asyncDownloadThread=new std::thread(&MainFrame::startDownload, this);
-        asyncDownloadThread->detach();
+        m_asyncDownloadThread = new std::thread(&MainFrame::startDownload, this);
+        m_asyncDownloadThread->detach();
 
     }
-    catch (const std::string& e)
+    catch (const std::string &e)
     {
         wxMessageBox(wxString(e), wxT("Download error"), wxICON_WARNING);
         return;
     }
 }
 
-int MainFrame::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+int MainFrame::downloadCallback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
 {
     if (dltotal == 0.0)
     {
         return 0;
     }
-    downloadProgressGauge->SetValue((int)(dlnow * 100/dltotal));
-    if(shouldStopDownload.load())
+    m_downloadProgressGauge->SetValue((int) (dlnow * 100 / dltotal));
+    if (m_shouldStopDownload.load())
     {
         return 1;
     }
@@ -122,39 +133,38 @@ int MainFrame::downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, c
 
 void MainFrame::startDownload()
 {
-    if(uqDownloader == nullptr)
+    if (m_uqDownloader == nullptr)
     {
         wxMessageBox(wxT("Pointer on downloader is null."), wxT("Pointer error"), wxICON_ERROR);
         return;
     }
-    downloadProgressGauge->SetValue(0);
-    downloadProgressGauge->SetForegroundColour(*wxGREEN);
-    startDownloadButton->Disable();
-    stopDownloadButton->Enable();
+    m_downloadProgressGauge->SetValue(0);
+    m_downloadProgressGauge->SetForegroundColour(*wxGREEN);
+    m_startDownloadButton->Disable();
+    m_stopDownloadButton->Enable();
     try
     {
-        uqDownloader->download();
+        m_uqDownloader->download();
     }
-    catch (const std::string& e)
+    catch (const std::string &e)
     {
-        shouldStopDownload.store(true);
+        m_shouldStopDownload.store(true);
     }
-    startDownloadButton->Enable();
-    stopDownloadButton->Disable();
-    if(!shouldStopDownload.load())
+    m_startDownloadButton->Enable();
+    m_stopDownloadButton->Disable();
+    if (!m_shouldStopDownload.load())
     {
-        downloadProgressGauge->SetForegroundColour(*wxBLUE);
+        m_downloadProgressGauge->SetForegroundColour(*wxBLUE);
         wxMessageBox(wxT("Your movie has been downloaded."), wxT("Download done"), wxICON_INFORMATION);
-    }
-    else
+    } else
     {
-        downloadProgressGauge->SetForegroundColour(*wxRED);
-        downloadProgressGauge->SetValue(0);
-        wxRemoveFile(fileName);
+        m_downloadProgressGauge->SetForegroundColour(*wxRED);
+        m_downloadProgressGauge->SetValue(0);
+        wxRemoveFile(m_fileName);
     }
 }
 
-void MainFrame::onStopDownloadClicked(wxCommandEvent& event)
+void MainFrame::onStopDownloadClicked(wxCommandEvent &event)
 {
-    shouldStopDownload.store(true);
+    m_shouldStopDownload.store(true);
 }

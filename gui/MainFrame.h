@@ -9,36 +9,40 @@
 class MainFrame : public wxFrame, public DownloaderListener
 {
 public:
-    MainFrame(const wxString& title);
+    MainFrame(const wxString &title);
+
     ~MainFrame();
 
-    int downloadCallback(void* p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
+    int downloadCallback(void *p, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
 private:
-    void onStartDownloadClicked(wxCommandEvent& event);
-    void onStopDownloadClicked(wxCommandEvent& event);
+    void onStartDownloadClicked(wxCommandEvent &event);
+
+    void onStopDownloadClicked(wxCommandEvent &event);
+
     void onClose(wxCloseEvent &event);
+
     void startDownload();
 
     wxPanel *m_mainPanel;
     wxStaticText *m_titleLabel;
-    wxStaticText *URLLabel;
-    wxTextCtrl *URLTextCtrl;
-    wxStaticText *fileDestLabel;
-    wxFilePickerCtrl *fileDestPicker;
-    wxButton *startDownloadButton;
-    wxButton *stopDownloadButton;
-    wxStaticText *downloadProgressLabel;
-    wxGauge *downloadProgressGauge;
+    wxStaticText *m_URLLabel;
+    wxTextCtrl *m_URLTextCtrl;
+    wxStaticText *m_fileDestLabel;
+    wxFilePickerCtrl *m_fileDestPicker;
+    wxButton *m_startDownloadButton;
+    wxButton *m_stopDownloadButton;
+    wxStaticText *m_downloadProgressLabel;
+    wxGauge *m_downloadProgressGauge;
 
-    wxString URLTextCtrlHint, fileName;
+    wxString m_URLTextCtrlHint, m_fileName;
 
-    Downloader *uqDownloader = nullptr;
-    std::thread *asyncDownloadThread = nullptr; // replace with unique_ptr ?
+    Downloader *m_uqDownloader = nullptr;
+    std::thread *m_asyncDownloadThread = nullptr; // replace with unique_ptr ?
 
-    std::atomic<bool> shouldStopDownload = ATOMIC_VAR_INIT(false);
+    std::atomic<bool> m_shouldStopDownload = ATOMIC_VAR_INIT(false);
 
-    DECLARE_EVENT_TABLE()
+DECLARE_EVENT_TABLE()
 
     enum
     {
