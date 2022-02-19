@@ -102,7 +102,7 @@ void Downloader::download()
     }
     string videoURL = strHTML.substr(posBegVid + 11, posEndVid - posBegVid - 5);
 
-    void *m_downloadCallback = Downloader::downloadCallback;
+    void *m_downloadCallback = (void*)Downloader::downloadCallback;
     curl_easy_setopt(m_curl, CURLOPT_XFERINFOFUNCTION, m_downloadCallback);
     curl_easy_setopt(m_curl, CURLOPT_XFERINFODATA, this);
 
