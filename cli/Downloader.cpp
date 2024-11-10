@@ -27,6 +27,7 @@ Downloader::Downloader()
     curl_easy_setopt(m_curl, CURLOPT_COOKIEJAR, "");
     curl_easy_setopt(m_curl, CURLOPT_WRITEDATA, this);
     curl_easy_setopt(m_curl, CURLOPT_NOPROGRESS, false);
+    curl_easy_setopt(m_curl, CURLOPT_FOLLOWLOCATION, 1L);
 }
 
 Downloader::Downloader(std::string uqUrl, std::string outputFile, DownloaderListener *downloaderListener) : Downloader()
